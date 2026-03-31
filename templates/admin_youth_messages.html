@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Youth Messages - BRC</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+body {margin:0;font-family:'Poppins',sans-serif;background:linear-gradient(135deg,#673ab7,#9c27b0,#00bcd4,#1de9b6);background-size:400% 400%;animation:gradientShift 12s infinite alternate;color:white;}
+@keyframes gradientShift {0%{background-position:0% 50%;}100%{background-position:100% 50%;}}
+.container {max-width:700px;margin:50px auto;text-align:center;}
+form {margin-top:20px;}
+input,textarea {width:100%;padding:12px;margin:10px 0;border:none;border-radius:10px;}
+button {padding:12px 20px;border:none;border-radius:10px;background:#673ab7;color:white;font-weight:600;cursor:pointer;}
+button:hover {background:#9c27b0;}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Youth Messages</h1>
+  <p>Send announcements or updates to youth members.</p>
+  <form method="POST" action="/api/messages">
+    <input type="text" name="name" placeholder="Your Name" required>
+    <input type="email" name="email" placeholder="Your Email (optional)">
+    <textarea name="message" placeholder="Type your message here..." required></textarea>
+    <button type="submit">Send Message</button>
+  </form>
+  <a href="/admin/youth" style="color:white;display:block;margin-top:20px;">⬅ Back to Dashboard</a>
+</div>
+</body>
+</html>

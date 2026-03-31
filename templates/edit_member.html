@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Edit Member - BRC</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+body {margin:0;font-family:'Poppins',sans-serif;background:linear-gradient(135deg,#00bcd4,#1de9b6,#ff8a00,#e52e71);background-size:400% 400%;animation:gradientShift 12s infinite alternate;color:white;}
+@keyframes gradientShift {0%{background-position:0% 50%;}100%{background-position:100% 50%;}}
+.container {max-width:600px;margin:50px auto;text-align:center;}
+input {width:100%;padding:12px;margin:10px 0;border:none;border-radius:10px;}
+button {padding:12px 20px;border:none;border-radius:10px;background:#00bcd4;color:white;font-weight:600;cursor:pointer;}
+button:hover {background:#ff8a00;}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Edit Member</h1>
+  <form method="POST">
+    <input type="text" name="fullname" value="{{ member['fullname'] }}" required>
+    <input type="email" name="email" value="{{ member['email'] }}" required>
+    <button type="submit">Save Changes</button>
+  </form>
+  <a href="/admin/manage-members" style="color:white;display:block;margin-top:20px;">⬅ Back to Members</a>
+</div>
+</body>
+</html>

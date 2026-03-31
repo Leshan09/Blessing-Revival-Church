@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Youth Events - BRC</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+body {margin:0;font-family:'Poppins',sans-serif;background:linear-gradient(135deg,#9c27b0,#673ab7,#00bcd4,#1de9b6);background-size:400% 400%;animation:gradientShift 12s infinite alternate;color:white;}
+@keyframes gradientShift {0%{background-position:0% 50%;}100%{background-position:100% 50%;}}
+.container {max-width:800px;margin:50px auto;text-align:center;}
+form {margin-top:20px;}
+input,textarea {width:100%;padding:10px;margin:10px 0;border:none;border-radius:10px;}
+button {padding:10px 20px;border:none;border-radius:10px;background:#9c27b0;color:white;cursor:pointer;}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Youth Events</h1>
+  <form method="POST" action="/admin/add_event">
+    <input type="text" name="title" placeholder="Event Title" required>
+    <input type="date" name="date" required>
+    <textarea name="description" placeholder="Event Description" required></textarea>
+    <button type="submit">Create Youth Event</button>
+  </form>
+  <a href="/admin/youth" style="color:white;display:block;margin-top:20px;">⬅ Back to Dashboard</a>
+</div>
+</body>
+</html>

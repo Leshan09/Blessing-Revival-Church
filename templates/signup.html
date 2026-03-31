@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BRC Member Sign Up</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<style>
+body, html {
+    margin:0; padding:0;
+    font-family:'Poppins',sans-serif;
+    height:100%;
+    background: linear-gradient(135deg,#ff8a00,#e52e71,#1de9b6,#00bcd4);
+    background-size: 400% 400%;
+    animation:bgShift 15s infinite alternate;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+
+@keyframes bgShift {
+    0% {background-position:0% 50%;}
+    50% {background-position:100% 50%;}
+    100% {background-position:0% 50%;}
+}
+
+
+.container {
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(15px);
+    border-radius:20px;
+    padding:40px;
+    width:400px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.5);
+    color:white;
+    text-align:center;
+}
+
+
+.container h1 {
+    margin-bottom:20px;
+    text-shadow:1px 1px 5px rgba(0,0,0,0.5);
+}
+
+
+.input-field {
+    width:100%;
+    padding:12px;
+    margin:10px 0;
+    border:none;
+    border-radius:10px;
+    outline:none;
+}
+
+
+.input-field::placeholder {
+    color: rgba(255,255,255,0.7);
+}
+
+
+button {
+    width:100%;
+    padding:12px;
+    margin-top:15px;
+    border:none;
+    border-radius:10px;
+    background:#00bcd4;
+    color:white;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+
+button:hover {
+    background:#1de9b6;
+}
+
+
+.toggle-password {
+    position:absolute;
+    right:20px;
+    top:calc(50% + 100px);
+    cursor:pointer;
+    color:white;
+}
+
+
+.alert {
+    display:none;
+    background:rgba(255,0,0,0.5);
+    padding:10px;
+    border-radius:8px;
+    margin-bottom:10px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>Member Sign Up</h1>
+    <div class="alert" id="alertBox">Fill all fields!</div>
+    <label for="fullname">Full Name</label>
+    <input type="text" id="fullname" class="input-field" placeholder="Full Name">
+    <label for="email">Email</label>
+    <input type="email" id="email" class="input-field" placeholder="Email">
+    <label for="password">Password</label>
+    <div style="position:relative;">
+        <input type="password" id="password" class="input-field" placeholder="Password">
+        <i class="fas fa-eye toggle-password" id="togglePassword"></i>
+    </div>
+    <label for="confirmpassword">Confirm Password</label>
+    <div style="position:relative;">
+        <input type="password" id="confirmPassword" class="input-field" placeholder="Confirm Password">
+        <i class="fas fa-eye toggle-confirm-password" id="toggleConfirm"></i>
+    </div>
+    <button id="signupBtn">Sign Up</button>
+    <a href="{{ url_for('page_member_login') }}">Member Login</a>
+
+
+</div>
+
+
+<script>
+// Toggle Passwords
+document.getElementById('togglePassword').addEventListener('click', ()=>{
+    const pass = document.getElementById('password');
+    pass.type = pass.type === 'password' ? 'text' : 'password';
+});
+document.getElementById('toggleConfirm').addEventListener('click', ()=>{
+    const pass = document.getElementById('confirmPassword');
+    // pass.type = pass.type === 'password' ? 'text' : 'password';
+});
+
+
+document.getElementById('signupBtn').addEventListener('click', async () => {
+    const fullname = document.getElementById('fullname').value;
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const confirm = document.getElementById('confirmPassword').value;
+    const alertBox = document.getElementById('alertBox');
+
+
+    alertBox.style.display = "none";
+
+
+    if(!fullname || !email || !password || !confirm){
+        alertBox.textContent = "Please fill all fields!";
+        alertBox.style.display = "block";
+        return;
+    }
+    if(password !== confirm){
+        alertBox.textContent = "Passwords do not match!";
+        alertBox.style.display = "block";
+        return;
+    }
+
+
+    // Send data to Flask backend
+    const response = await fetch('/api/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fullname, email, password })
+    });
+    const result = await response.json();
+
+
+    alertBox.textContent = result.message;
+    alertBox.style.display = "block";
+
+
+    if(result.status === 'success'){
+        // Redirect to login page after signup
+        setTimeout(() => { window.location.href = "/member/login"; }, 1500);
+    }
+});
+
+
+// Sign Up
+// document.getElementById('signupBtn').addEventListener('click', ()=>{
+//     const name = document.getElementById('fullname').value;
+//     const email = document.getElementById('email').value;
+//     const pass = document.getElementById('password').value;
+//     const confirm = document.getElementById('confirmPassword').value;
+//     const alertBox = document.getElementById('alertBox');
+
+
+//     alertBox.style.display = "none";
+
+
+//     if(!fullname || !email || !password || !confirm){
+//         alertBox.textContent="Please fill all fields!";
+//         alertBox.style.display="block";
+//         return;
+//     }
+
+
+//     if(password !== confirm){
+//         alertBox.textContent = "Passwords do not match!";
+//         alertBox.style.display = "block";
+//         return;
+//     }
+
+
+//      // Send data to Flask backend
+//     const response = await fetch('http://127.0.0.1:5000/signup', {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify({ fullname, email, password })
+//     });
+//     const result = await response.json();
+
+
+//     alertBox.textContent = result.message;
+//     alertBox.style.display = "block";
+
+
+//     if(result.status === 'success'){
+//         // Redirect to login page after signup
+//         setTimeout(() => { window.location.href = "login.html"; }, 1500);
+//     }
+// });
+
+
+//      else if(pass !== confirm){
+//         alertBox.textContent="Passwords do not match!";
+//         alertBox.style.display="block";
+//     } else {
+//         alert("Account created successfully! (Placeholder)");
+//         window.location.href = "login.html"; // redirect to login
+//     }
+// });
+
+
+// Redirect to login
+ //document.getElementById('loginLink').addEventListener('click', ()=>{
+//window.location.href="login.html";
+// });
+</script>
+</body>
+</html>
+

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Communication - BRC</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+body { font-family:'Poppins',sans-serif; margin:0; background: linear-gradient(to right,#e0f7fa,#d9fbe0); color:#333; }
+header { background: linear-gradient(90deg,#1de9b6,#00bcd4); color:white; text-align:center; padding:20px; font-size:28px; }
+.logo { font-size:16px; font-weight:400; margin-top:5px; }
+.navbar { display:flex; justify-content:space-between; align-items:center; background:#f0f0f0; padding:10px 20px; box-shadow:0 2px 8px rgba(0,0,0,0.2);}
+.nav-links a { margin:0 10px; padding:8px 12px; border-radius:5px; text-decoration:none; font-weight:600; color:#00bcd4; transition:0.3s;}
+.nav-links a:hover, .nav-links a.active { background:#00bcd4; color:white; }
+.intro { text-align:center; padding:30px; max-width:900px; margin:auto; background:rgba(255,255,255,0.9); border-radius:15px; box-shadow:0 8px 16px rgba(0,0,0,0.2);}
+.message-board, .announcement-board, .member-contacts, .notifications { max-width:1000px; margin:30px auto; padding:20px; border-radius:15px; background: #f7f7f7; box-shadow: 0 6px 12px rgba(0,0,0,0.15);}
+.message-card, .announcement-card, .member-card, .notification-card { background:#e0e0e0; margin:10px 0; padding:15px; border-radius:10px; box-shadow:0 4px 8px rgba(0,0,0,0.1); transition:0.3s; cursor:pointer; }
+.message-card:hover, .announcement-card:hover, .member-card:hover, .notification-card:hover { box-shadow:0 0 20px #00bcd4; transform:translateY(-5px);}
+.send-btn { background:#00bcd4; color:white; border:none; padding:10px 20px; border-radius:10px; cursor:pointer; margin-top:10px; font-weight:600; transition:0.3s; }
+.send-btn:hover { background:#1de9b6; }
+.modal-content { background:white; padding:20px; border-radius:15px; min-width:300px; position:relative; }
+.modal-close { position:absolute; top:10px; right:15px; cursor:pointer; font-size:20px; font-weight:bold; }
+</style>
+</head>
+<body>
+
+<header>
+  Blessing Revival Centric
+  <div class="logo">Church • Faith • Systems</div>
+</header>
+
+<nav class="navbar">
+  <h1>Communication</h1>
+  <div class="nav-links">
+    <a href="{{ url_for('page_home') }}">Home</a>
+    <a href="{{ url_for('page_about') }}">About</a>
+    <a href="{{ url_for('page_services') }}">Services</a>
+    <a href="{{ url_for('page_finance') }}">Finance</a>
+    <a href="{{ url_for('page_communication') }}">Communication</a>
+    <a href="{{ url_for('page_contact') }}">Contact</a>
+</div>
+</nav>
+
+<div class="intro">
+  <h2>Stay Connected</h2>
+  <p>Send messages, view announcements, and communicate with church members seamlessly. All interactive features are frontend-ready and awaiting backend integration.</p>
+</div>
+
+<!-- Feature 1: Message Inbox -->
+<div class="message-board">
+  <h2>Message Inbox</h2>
+  <div class="message-card" onclick="openModal('Message from Pastor')">
+    <strong>Pastor John Doe:</strong> Reminder for Sunday Service
+    <p>Received: 01 Mar 2026</p>
+  </div>
+  <div class="message-card" onclick="openModal('Message from Mary K.')">
+    <strong>Mary K.:</strong> Prayer request update
+    <p>Received: 01 Mar 2026</p>
+  </div>
+  <div class="message-card" onclick="openModal('Message from Finance')">
+    <strong>Finance Dept:</strong> Donation receipt
+    <p>Received: 28 Feb 2026</p>
+  </div>
+</div>
+
+<!-- Feature 2: Send Message -->
+<div class="announcement-board">
+  <h2>Send Message</h2>
+  <button class="send-btn" onclick="openModal('Send Message')">Compose Message</button>
+</div>
+
+<!-- Feature 3: Announcements -->
+<div class="announcement-board">
+  <h2>Announcements</h2>
+  <div class="announcement-card">Next Youth Workshop on 10 Mar 2026</div>
+  <div class="announcement-card">Community Outreach Fundraising Event</div>
+  <div class="announcement-card">New Sermon Videos Uploaded</div>
+</div>
+
+<!-- Feature 4: Member Contacts -->
+<div class="member-contacts">
+  <h2>Member Directory</h2>
+  <div class="member-card" onclick="openModal('Contact Mary K.')">Mary K. - Youth Leader</div>
+  <div class="member-card" onclick="openModal('Contact James W.')">James W. - Finance Dept</div>
+  <div class="member-card" onclick="openModal('Contact Angela N.')">Angela N. - Tech Support</div>
+</div>
+
+<!-- Feature 5: Notifications Panel -->
+<div class="notifications">
+  <h2>Notifications</h2>
+  <div class="notification-card">Server maintenance scheduled for 5 Mar 2026</div>
+  <div class="notification-card">New donation received</div>
+  <div class="notification-card">Upcoming community meeting</div>
+</div>
+
+<!-- Modals Script -->
+<script>
+function openModal(module){
+    const modal=document.createElement('div');
+    modal.style.position='fixed';
+    modal.style.top='0'; modal.style.left='0'; modal.style.width='100%'; modal.style.height='100%';
+    modal.style.background='rgba(0,0,0,0.5)'; modal.style.display='flex'; modal.style.justifyContent='center'; modal.style.alignItems='center';
+    modal.innerHTML=`<div class="modal-content">
+        <span class="modal-close" onclick="this.parentElement.parentElement.remove()">&times;</span>
+        <h2>${module}</h2>
+        <p>This feature is ready for backend integration.</p>
+    </div>`;
+    document.body.appendChild(modal);
+}
+</script>
+
+</body>
+</html>

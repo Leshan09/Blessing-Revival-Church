@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About - BRC</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  body { font-family:'Poppins', sans-serif; margin:0; background: linear-gradient(to right,#ffecd2,#fcb69f); color:#333; }
+  header { background: linear-gradient(90deg,#ff8a00,#e52e71); color:white; text-align:center; padding:20px; font-size:28px; }
+  .logo { font-size:16px; font-weight:400; margin-top:5px; }
+  .navbar { display:flex; justify-content:space-between; align-items:center; background:#fff3e0; padding:10px 20px; box-shadow:0 2px 8px rgba(0,0,0,0.2);}
+  .nav-links a { margin:0 10px; padding:8px 12px; border-radius:5px; text-decoration:none; font-weight:600; color:#e52e71; transition:0.3s;}
+  .nav-links a:hover, .nav-links a.active { background:#e52e71; color:white; }
+  .intro { text-align:center; padding:40px 20px; max-width:900px; margin:auto; background:rgba(255,255,255,0.9); border-radius:15px; box-shadow:0 8px 16px rgba(0,0,0,0.2);}
+  .stats, .timeline, .gallery, .mission, .testimonials { margin:50px auto; max-width:1000px; text-align:center; }
+  .stat-card, .mission-card, .testimonial-card, .timeline-event { background: linear-gradient(135deg,#f0f9ff,#cbf1f5); padding:20px; border-radius:15px; margin:15px; display:inline-block; width:180px; box-shadow:0 6px 12px rgba(0,0,0,0.15);}
+  .gallery img { width:200px; height:150px; margin:10px; border-radius:15px; box-shadow:0 6px 12px rgba(0,0,0,0.15); transition:0.3s;}
+  .gallery img:hover { transform:scale(1.05);}
+</style>
+</head>
+<body>
+
+<header>
+  Blessing Revival Centric
+  <div class="logo">Church • Faith • Systems</div>
+</header>
+
+<nav class="navbar">
+  <h1>About BRC</h1>
+  <div class="nav-links">
+      <a href="{{ url_for('page_home')}}">Home</a>
+      <a href="{{ url_for('page_about')}}" class="active">About</a>
+      <a href="{{ url_for('page_services') }}">Services</a>
+      <a href="{{ url_for('page_finance') }}">Finance</a>
+      <a href="{{ url_for('page_communication') }}">Communication</a>
+      <a href="{{ url_for('page_contact') }}">Contact</a>
+  </div>
+</nav>
+
+<div class="intro">
+  <h2>About Blessing Revival Centric</h2>
+  <p>BRC merges faith, technology, and community. Our goal is to empower church leadership and members with tools for communication, fiscal management, and service coordination.</p>
+</div>
+
+<!-- Feature 1: Stats -->
+<div class="stats">
+  <div class="stat-card"><h2>150</h2><p>Members</p></div>
+  <div class="stat-card"><h2>25</h2><p>Events</p></div>
+  <div class="stat-card"><h2>$15,000</h2><p>Total Donations</p></div>
+  <div class="stat-card"><h2>5</h2><p>Ministries</p></div>
+  <div class="stat-card"><h2>10</h2><p>Community Projects</p></div>
+</div>
+
+<!-- Feature 2: Timeline -->
+<div class="timeline">
+  <h2>Church History</h2>
+  <div class="timeline-event"><h3>2005</h3><p>Founded by Pastor John Doe</p></div>
+  <div class="timeline-event"><h3>2010</h3><p>First Community Outreach</p></div>
+  <div class="timeline-event"><h3>2015</h3><p>Expanded Youth Programs</p></div>
+  <div class="timeline-event"><h3>2020</h3><p>Launched Digital Platform</p></div>
+  <div class="timeline-event"><h3>2026</h3><p>Full System Integration</p></div>
+</div>
+
+<!-- Feature 3: Gallery -->
+<div class="gallery">
+  <h2>Community Moments</h2>
+  <img src="https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=500&q=80" alt="Community 1">
+  <img src="https://images.unsplash.com/photo-1507692049790-de58290a4334?auto=format&fit=crop&w=500&q=80" alt="Community 2">
+  <img src="https://images.unsplash.com/photo-1535223289827-42f1e9919769?auto=format&fit=crop&w=500&q=80" alt="Community 3">
+  <img src="https://images.unsplash.com/photo-1529070538774-1843cb3265df?auto=format&fit=crop&w=500&q=80" alt="Community 4">
+  <img src="https://images.unsplash.com/photo-1548191265-cc70d3d45ba1?auto=format&fit=crop&w=500&q=80" alt="Community 5">
+</div>
+
+<!-- Feature 4: Mission & Vision -->
+<div class="mission">
+  <h2>Mission & Vision</h2>
+  <div class="mission-card"><h3>Mission</h3><p>Empower members and leaders through faith and technology.</p></div>
+  <div class="mission-card"><h3>Vision</h3><p>Be a hub where community, faith, and innovation thrive together.</p></div>
+  <div class="mission-card"><h3>Values</h3><p>Integrity, Faith, Transparency, Service, Unity.</p></div>
+  <div class="mission-card"><h3>Growth</h3><p>Encourage spiritual, technological, and communal growth.</p></div>
+  <div class="mission-card"><h3>Outreach</h3><p>Extend support to surrounding communities through projects and programs.</p></div>
+</div>
+
+<!-- Feature 5: Testimonials -->
+<div class="testimonials">
+  <h2>Member Testimonials</h2>
+  <div class="testimonial-card"><p>"BRC has changed the way we connect as a church!"</p><strong>- Mary K.</strong></div>
+  <div class="testimonial-card"><p>"Managing finances and events is now so much easier."</p><strong>- James W.</strong></div>
+  <div class="testimonial-card"><p>"I love the integration of faith and technology."</p><strong>- Angela N.</strong></div>
+  <div class="testimonial-card"><p>"The community feels more connected than ever."</p><strong>- Peter T.</strong></div>
+  <div class="testimonial-card"><p>"Our church programs are now more organized."</p><strong>- Faith M.</strong></div>
+</div>
+
+
+<script>
+  fetch("/api/about")
+.then(res => res.json())
+.then(data => {
+    document.getElementById("churchName").innerText = data.name;
+    document.getElementById("mission").innerText = "Mission: " + data.mission;
+    document.getElementById("vision").innerText = "Vision: " + data.vision;
+    document.getElementById("description").innerText = data.description;
+})
+.catch(() => {
+    console.log("Using default About content");
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Finance - BRC</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+body {margin:0;font-family:'Poppins',sans-serif;background:linear-gradient(135deg,#ffcc00,#ff8a00,#e52e71,#00bcd4);background-size:400% 400%;animation:gradientShift 12s infinite alternate;color:white;}
+@keyframes gradientShift {0%{background-position:0% 50%;}100%{background-position:100% 50%;}}
+.container {max-width:900px;margin:50px auto;text-align:center;}
+.card {background:rgba(255,255,255,0.15);backdrop-filter:blur(15px);padding:20px;border-radius:15px;margin:20px;box-shadow:0 10px 30px rgba(0,0,0,0.4);}
+.table {width:100%;border-collapse:collapse;margin-top:20px;}
+.table th,.table td {padding:10px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Finance Overview</h1>
+  <div class="card">
+    <h2>Total Donations: $15,000</h2>
+  </div>
+<table class="table">
+  <tr><th>Date</th><th>Donor</th><th>Message</th></tr>
+  {% for d in donations %}
+  <tr>
+    <td>{{ d['date_sent'] }}</td>
+    <td>{{ d['name'] }}</td>
+    <td>{{ d['message'] }}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+  <a href="/admin/elder" style="color:white;display:block;margin-top:20px;">⬅ Back to Dashboard</a>
+</div>
+</body>
+</html>

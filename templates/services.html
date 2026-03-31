@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Services - BRC</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  body { font-family:'Poppins',sans-serif; margin:0; background: linear-gradient(to right,#ffe3e3,#ffecd2); color:#333; }
+  header { background: linear-gradient(90deg,#ff8a00,#e52e71); color:white; text-align:center; padding:20px; font-size:28px; }
+  .logo { font-size:16px; font-weight:400; margin-top:5px; }
+  .navbar { display:flex; justify-content:space-between; align-items:center; background:#fff3e0; padding:10px 20px; box-shadow:0 2px 8px rgba(0,0,0,0.2);}
+  .nav-links a { margin:0 10px; padding:8px 12px; border-radius:5px; text-decoration:none; font-weight:600; color:#e52e71; transition:0.3s;}
+  .nav-links a:hover, .nav-links a.active { background:#e52e71; color:white; }
+  .intro { text-align:center; padding:30px; max-width:900px; margin:auto; background:rgba(255,255,255,0.9); border-radius:15px; box-shadow:0 8px 16px rgba(0,0,0,0.2);}
+  .services-container { display:flex; flex-wrap:wrap; justify-content:center; gap:20px; margin:30px auto; max-width:1000px; }
+  .service-card { background: linear-gradient(135deg,#c2f0f9,#f0c2f9); width:250px; padding:20px; border-radius:15px; box-shadow:0 6px 12px rgba(0,0,0,0.15); text-align:center; cursor:pointer; transition:0.3s; }
+  .service-card:hover { transform:translateY(-10px) scale(1.05); box-shadow:0 12px 24px rgba(0,0,0,0.25);}
+  .service-card img { width:80px; margin-bottom:10px; }
+  .videos { display:flex; flex-wrap:wrap; justify-content:center; gap:20px; margin:30px; }
+  .videos iframe { width:300px; height:180px; border-radius:10px; box-shadow:0 6px 12px rgba(0,0,0,0.15);}
+  .countdown { text-align:center; background:#fff3e0; margin:30px auto; padding:20px; max-width:400px; border-radius:15px; box-shadow:0 6px 12px rgba(0,0,0,0.15); }
+</style>
+</head>
+<body>
+
+<header>
+  Blessing Revival Centric
+  <div class="logo">Church • Faith • Systems</div>
+</header>
+
+<nav class="navbar">
+  <h1>Services</h1>
+  <div class="nav-links">
+    <a href="{{ url_for('page_home') }}">Home</a>
+    <a href="{{ url_for('page_about') }}">About</a>
+    <a href="{{ url_for('page_services') }}">Services</a>
+    <a href="{{ url_for('page_finance') }}">Finance</a>
+    <a href="{{ url_for('page_communication') }}">Communication</a>
+    <a href="{{ url_for('page_contact') }}">Contact</a>
+</div>
+</nav>
+
+<div class="intro">
+  <h2>Our Services</h2>
+  <p>Explore the services we offer, including workshops, youth programs, sermons, and live events. All interactive features are ready for backend integration.</p>
+</div>
+
+<!-- Feature 1: Service Cards -->
+<div class="services-container">
+  <div class="service-card" onclick="openModal('Sunday Service')">
+    <img src="https://img.icons8.com/color/96/000000/church.png"/>
+    <h3>Sunday Service</h3>
+    <p>Interactive placeholder: watch sermon videos here</p>
+  </div>
+  <div class="service-card" onclick="openModal('Youth Program')">
+    <img src="https://img.icons8.com/color/96/000000/children.png"/>
+    <h3>Youth Program</h3>
+    <p>Interactive youth workshops & activities</p>
+  </div>
+  <div class="service-card" onclick="openModal('Workshops')">
+    <img src="https://img.icons8.com/color/96/000000/workshop.png"/>
+    <h3>Workshops</h3>
+    <p>Engaging spiritual and leadership workshops</p>
+  </div>
+  <div class="service-card" onclick="openModal('Live Events')">
+    <img src="https://img.icons8.com/color/96/000000/live-event.png"/>
+    <h3>Live Events</h3>
+    <p>Placeholder for future live streaming</p>
+  </div>
+  <div class="service-card" onclick="openModal('Community Outreach')">
+    <img src="https://img.icons8.com/color/96/000000/community.png"/>
+    <h3>Community Outreach</h3>
+    <p>Programs that engage and support the community</p>
+  </div>
+</div>
+
+<!-- Feature 2: Video Placeholders -->
+<div class="videos">
+  <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Sermon 1" allowfullscreen></iframe>
+  <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Workshop 1" allowfullscreen></iframe>
+  <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Youth Program 1" allowfullscreen></iframe>
+</div>
+
+<!-- Feature 3: Upcoming Event Countdown -->
+<div class="countdown">
+  <h3>Next Workshop Countdown</h3>
+  <p id="timer">Loading countdown...</p>
+</div>
+
+<!-- Feature 4: Testimonials (Placeholder) -->
+<div class="intro">
+  <h2>Service Feedback</h2>
+  <p>Member feedback section (interactive placeholder, backend integration coming soon).</p>
+</div>
+
+<!-- Feature 5: Modal / Interactive Feature -->
+<script>
+function openModal(module){
+    const modal=document.createElement('div');
+    modal.classList.add('modal');
+    modal.style.position='fixed';
+    modal.style.top='0'; modal.style.left='0'; modal.style.width='100%'; modal.style.height='100%'; 
+    modal.style.background='rgba(0,0,0,0.5)'; modal.style.display='flex'; modal.style.justifyContent='center'; modal.style.alignItems='center';
+    modal.innerHTML=`<div style="background:white;padding:20px;border-radius:15px;min-width:300px;position:relative;">
+        <span style="position:absolute;top:10px;right:15px;cursor:pointer;font-size:20px;font-weight:bold;" onclick="this.parentElement.parentElement.remove()">&times;</span>
+        <h2>${module}</h2>
+        <p>This feature is ready for backend integration.</p>
+    </div>`;
+    document.body.appendChild(modal);
+}
+
+// Countdown timer
+const eventDate=new Date();
+eventDate.setDate(eventDate.getDate()+5); // 5 days from now
+const timer=document.getElementById('timer');
+function updateTimer(){
+    const now=new Date();
+    const diff=eventDate-now;
+    const days=Math.floor(diff/(1000*60*60*24));
+    const hours=Math.floor((diff%(1000*60*60*24))/(1000*60*60));
+    const minutes=Math.floor((diff%(1000*60*60))/(1000*60));
+    const seconds=Math.floor((diff%(1000*60))/1000);
+    timer.textContent=`${days}d ${hours}h ${minutes}m ${seconds}s`;
+}
+updateTimer(); setInterval(updateTimer,1000);
+</script>
+
+</body>
+</html>

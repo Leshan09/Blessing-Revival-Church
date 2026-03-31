@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visitors | Blessing Revival Centric</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+body {
+  font-family:'Poppins', sans-serif;
+  margin:0;
+  background: linear-gradient(to right, #e0f7fa, #f0f8ff);
+  color:#333;
+  transition:0.4s;
+}
+
+/* HEADER */
+header {
+  background: linear-gradient(90deg,#ff8a00,#2575fc);
+  color:white;
+  text-align:center;
+  padding:30px 20px;
+  font-size:30px;
+  font-weight:700;
+}
+
+.logo {
+  font-size:14px;
+  opacity:0.9;
+}
+
+/* TOGGLE */
+.toggle {
+  position:absolute;
+  top:20px;
+  right:20px;
+  background:white;
+  border:none;
+  padding:8px 12px;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+/* HERO */
+.hero {
+  text-align:center;
+  padding:80px 20px;
+}
+
+.hero h1 {
+  font-size:3rem;
+  margin-bottom:20px;
+  background: linear-gradient(90deg,#2575fc,#ff8a00);
+  -webkit-background-clip:text;
+  color:transparent;
+}
+
+.hero p {
+  max-width:700px;
+  margin:auto;
+  color:#555;
+  font-size:1.2rem;
+}
+
+/* CTA */
+.cta {
+  margin-top:40px;
+}
+
+.cta a {
+  text-decoration:none;
+  padding:15px 35px;
+  border-radius:30px;
+  background: linear-gradient(90deg,#ff8a00,#e52e71);
+  color:white;
+  font-weight:600;
+  transition:0.3s;
+  box-shadow:0 8px 20px rgba(0,0,0,0.2);
+}
+
+.cta a:hover {
+  transform:translateY(-3px) scale(1.05);
+}
+
+/* SECTIONS */
+.section {
+  margin:60px auto;
+  max-width:1100px;
+  text-align:center;
+}
+
+/* CARDS */
+.cards {
+  display:flex;
+  gap:20px;
+  justify-content:center;
+  flex-wrap:wrap;
+  margin-top:30px;
+}
+
+.card {
+  width:260px;
+  padding:25px;
+  border-radius:15px;
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(10px);
+  box-shadow:0 8px 20px rgba(0,0,0,0.15);
+  transition:0.3s;
+}
+
+.card:hover {
+  transform:translateY(-10px) scale(1.05);
+}
+
+/* ABOUT LINK */
+.about {
+  margin-top:40px;
+}
+
+.about a {
+  text-decoration:none;
+  color:#2575fc;
+  font-weight:600;
+}
+
+/* DARK MODE */
+.dark-mode {
+  background:#121212 !important;
+  color:#f1f1f1 !important;
+}
+
+.dark-mode header {
+  background: linear-gradient(90deg,#111,#333);
+}
+
+.dark-mode .card {
+  background:#1e1e1e;
+  color:#fff;
+}
+
+.dark-mode .hero p {
+  color:#ccc;
+}
+
+</style>
+</head>
+
+<body>
+
+<button class="toggle" id="darkModeToggle">🌙</button>
+
+<header>
+  Blessing Revival Centric
+  <div class="logo">Church • Faith • Community</div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <h1>A Communion of Believers in Christ</h1>
+  <p>
+    Welcome to a place where faith is alive, purpose is awakened,
+    and people from every background come together in unity.
+    This is more than a church — it is a movement of grace,
+    transformation, and belonging.
+  </p>
+
+  <div class="cta">
+    <a href="#">Join the Community</a>
+  </div>
+</section>
+
+<!-- SCRIPTURE -->
+<section class="section">
+  <div class="card" style="max-width:800px; margin:auto;">
+    <h3>“For where two or three gather in my name, there am I with them.”</h3>
+    <p style="margin-top:10px; font-size:14px; opacity:0.7;">— Matthew 18:20</p>
+  </div>
+</section>
+
+<!-- WHO WE ARE -->
+<section class="section">
+  <h2>Who We Are</h2>
+
+  <div class="cards">
+    <div class="card">
+      <h3>Faith Driven</h3>
+      <p>Rooted deeply in Christ and guided by truth.</p>
+    </div>
+
+    <div class="card">
+      <h3>Diverse</h3>
+      <p>Different people, one faith, one family.</p>
+    </div>
+
+    <div class="card">
+      <h3>Purposeful</h3>
+      <p>Empowering lives to live intentionally.</p>
+    </div>
+  </div>
+</section>
+
+<!-- DIVERSITY -->
+<section class="section">
+  <h2>One Faith. Many Stories.</h2>
+  <p style="max-width:700px; margin:auto;">
+    We are a community of different cultures, backgrounds, and journeys.
+    From every walk of life, we come together as one — united in Christ,
+    growing in love, and building something greater than ourselves.
+  </p>
+</section>
+
+<!-- EXPERIENCE -->
+<section class="section">
+  <h2>Your Experience</h2>
+
+  <div class="cards">
+    <div class="card">
+      <h3>Worship</h3>
+      <p>Spirit-filled and deeply engaging.</p>
+    </div>
+
+    <div class="card">
+      <h3>Teaching</h3>
+      <p>Practical truth you can live daily.</p>
+    </div>
+
+    <div class="card">
+      <h3>Belonging</h3>
+      <p>You are seen, valued, and loved.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FIRST VISIT -->
+<section class="section">
+  <h2>Your First Visit</h2>
+
+  <div class="cards">
+    <div class="card">
+      <h3>Warm Welcome</h3>
+      <p>You’ll be received with genuine love and openness.</p>
+    </div>
+
+    <div class="card">
+      <h3>Relaxed Atmosphere</h3>
+      <p>Come as you are — no pressure, no expectations.</p>
+    </div>
+
+    <div class="card">
+      <h3>Meaningful Service</h3>
+      <p>Experience worship and teaching that connects deeply.</p>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section">
+  <h2>Stories of Transformation</h2>
+
+  <div class="cards">
+    <div class="card">
+      <p>"I found purpose and a family I never knew I needed."</p>
+      <strong>- Sarah M.</strong>
+    </div>
+
+    <div class="card">
+      <p>"This community changed how I see faith and life."</p>
+      <strong>- James K.</strong>
+    </div>
+
+    <div class="card">
+      <p>"I walked in uncertain, but I found clarity and peace."</p>
+      <strong>- Anita W.</strong>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="section">
+  <h2>There’s a Place for You Here</h2>
+  <p style="max-width:600px; margin:auto;">
+    Whether you are searching, growing, or returning —
+    you are welcome. Take the step and become part of something meaningful.
+  </p>
+
+  <div class="cta">
+    <a href="#">Join the Community</a>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="section about">
+  <p>Want to know more about our story?</p>
+  <a href="#">About Us</a>
+</section>
+
+<script>
+const toggleBtn = document.getElementById("darkModeToggle");
+
+if(localStorage.getItem("darkMode") === "enabled"){
+  document.body.classList.add("dark-mode");
+}
+
+toggleBtn.addEventListener("click", () => {
+  document.body.classList.toggle("dark-mode");
+
+  if(document.body.classList.contains("dark-mode")){
+    localStorage.setItem("darkMode", "enabled");
+  } else {
+    localStorage.setItem("darkMode", "disabled");
+  }
+});
+</script>
+
+</body>
+</html>

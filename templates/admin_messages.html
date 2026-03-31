@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Manage Members - BRC</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+body {margin:0;font-family:'Poppins',sans-serif;background:linear-gradient(135deg,#00bcd4,#1de9b6,#ff8a00,#e52e71);background-size:400% 400%;animation:gradientShift 12s infinite alternate;color:white;}
+@keyframes gradientShift {0%{background-position:0% 50%;}100%{background-position:100% 50%;}}
+.container {max-width:1000px;margin:50px auto;text-align:center;}
+h1 {text-shadow:1px 1px 5px rgba(0,0,0,0.5);}
+.table {width:100%;border-collapse:collapse;margin-top:30px;}
+.table th,.table td {padding:12px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);}
+button {padding:8px 15px;border:none;border-radius:8px;cursor:pointer;}
+.add {background:#00bcd4;color:white;}
+.edit {background:#ff8a00;color:white;}
+.delete {background:#e52e71;color:white;}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Manage Members</h1>
+  <button class="add">➕ Add Member</button>
+  <table class="table">
+    <tr><th>Name</th><th>Email</th><th>Actions</th></tr>
+    <tr><td>John Doe</td><td>john@example.com</td><td><button class="edit">Edit</button> <button class="delete">Delete</button></td></tr>
+    <tr><td>Jane Smith</td><td>jane@example.com</td><td><button class="edit">Edit</button> <button class="delete">Delete</button></td></tr>
+  </table>
+  <a href="/admin/pastor" style="color:white;display:block;margin-top:20px;">⬅ Back to Dashboard</a>
+</div>
+</body>
+</html>

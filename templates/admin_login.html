@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login - BRC</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+body {
+    margin:0;
+    font-family:'Poppins', sans-serif;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background: linear-gradient(135deg, #1de9b6, #00bcd4, #ff8a00, #e52e71);
+    background-size: 400% 400%;
+    animation: gradientShift 12s infinite alternate;
+}
+
+@keyframes gradientShift {
+    0% {background-position:0% 50%;}
+    100% {background-position:100% 50%;}
+}
+
+.login-container {
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(20px);
+    padding:40px;
+    border-radius:20px;
+    width:350px;
+    text-align:center;
+    box-shadow:0 10px 30px rgba(0,0,0,0.4);
+    color:white;
+}
+
+.login-container h2 {
+    margin-bottom:20px;
+    font-weight:700;
+}
+
+.input-group {
+    margin-bottom:20px;
+}
+
+.input-group input {
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    outline:none;
+    font-size:14px;
+}
+
+.login-btn {
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    background:white;
+    color:#00bcd4;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.login-btn:hover {
+    background:#00bcd4;
+    color:white;
+}
+
+.extra {
+    margin-top:15px;
+    font-size:13px;
+    opacity:0.8;
+}
+
+.logo {
+    font-size:18px;
+    margin-bottom:10px;
+    opacity:0.9;
+}
+</style>
+</head>
+
+<body>
+
+<div class="login-container">
+    <div class="logo">BRC Admin Portal</div>
+    <h2>Login</h2>
+
+    <form method="POST" action="/admin/login">
+        <div class="input-group">
+            <input type="text" name="username" placeholder="Username" required>
+        </div>
+
+        <div class="input-group">
+            <input type="password" name="password" placeholder="Password" required>
+        </div>
+
+        <button class="login-btn" type="submit">Login</button>
+    </form>
+
+    <div class="extra">
+        Authorized personnel only
+    </div>
+</div>
+
+</body>
+</html>

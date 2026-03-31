@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BRC Website</title>
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+            background: #f4f4f4;
+        }
+
+        .container {
+            margin-top: 80px;
+        }
+
+        .card {
+            display: inline-block;
+            width: 250px;
+            padding: 20px;
+            margin: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+        }
+
+        .admin {
+            background: #111;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>Welcome to BRC Website</h1>
+<p>Select your portal</p>
+
+<div class="container">
+
+    <div class="card" onclick="location.href='/visitor'">
+        👀 Visitor Portal
+    </div>
+
+    <div class="card" onclick="location.href='/member/login'">
+        👥 Member Portal
+    </div>
+
+    <div class="card admin" onclick="location.href='/admin/login'">
+        🛠 Admin Portal
+    </div>
+
+</div>
+<h2>Create Event</h2>
+
+<form action="/admin/add_event" method="POST">
+
+    <input type="text" name="title" placeholder="Event Title" required>
+    <br><br>
+
+    <input type="date" name="date" required>
+    <br><br>
+
+    <textarea name="description" placeholder="Event Description" required></textarea>
+    <br><br>
+
+    <button type="submit">Add Event</button>
+
+</form>
+</body>
+</html>

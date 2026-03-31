@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finance - BRC</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  body { font-family:'Poppins',sans-serif; margin:0; background: linear-gradient(to right,#e0f7fa,#f1f8e9); color:#333; }
+  header { background: linear-gradient(90deg,#ff8a00,#e52e71); color:white; text-align:center; padding:20px; font-size:28px; }
+  .logo { font-size:16px; font-weight:400; margin-top:5px; }
+  .navbar { display:flex; justify-content:space-between; align-items:center; background:#fff3e0; padding:10px 20px; box-shadow:0 2px 8px rgba(0,0,0,0.2);}
+  .nav-links a { margin:0 10px; padding:8px 12px; border-radius:5px; text-decoration:none; font-weight:600; color:#e52e71; transition:0.3s;}
+  .nav-links a:hover, .nav-links a.active { background:#e52e71; color:white; }
+  .intro { text-align:center; padding:30px; max-width:900px; margin:auto; background:rgba(255,255,255,0.9); border-radius:15px; box-shadow:0 8px 16px rgba(0,0,0,0.2);}
+  .transactions, .charts, .reports { margin:30px auto; max-width:1000px; text-align:center; }
+  .transaction-card { display:inline-block; background: linear-gradient(135deg,#ffe3e3,#ffc1c1); width:200px; margin:15px; padding:20px; border-radius:15px; box-shadow:0 6px 12px rgba(0,0,0,0.15); transition:0.3s; cursor:pointer; }
+  .transaction-card:hover { transform:translateY(-8px) scale(1.05); box-shadow:0 12px 24px rgba(0,0,0,0.25);}
+  .transaction-card h3 { margin-bottom:10px; }
+  .chart-container { background:white; padding:20px; border-radius:15px; box-shadow:0 6px 12px rgba(0,0,0,0.15); margin-bottom:30px;}
+  .reports button { background: #ff8a00; color:white; border:none; padding:10px 20px; border-radius:10px; cursor:pointer; margin:10px; font-weight:600; transition:0.3s;}
+  .reports button:hover { background:#e52e71;}
+</style>
+</head>
+<body>
+
+<header>
+  Blessing Revival Centric
+  <div class="logo">Church • Faith • Systems</div>
+</header>
+
+<nav class="navbar">
+  <h1>Finance Dashboard</h1>
+  <div class="nav-links">
+    <a href="{{ url_for('page_home') }}">Home</a>
+    <a href="{{ url_for('page_about') }}">About</a>
+    <a href="{{ url_for('page_services') }}">Services</a>
+    <a href="{{ url_for('page_finance') }}">Finance</a>
+    <a href="{{ url_for('page_communication') }}">Communication</a>
+    <a href="{{ url_for('page_contact') }}">Contact</a>
+</div>
+</nav>
+
+<div class="intro">
+  <h2>Church Finances</h2>
+  <p>Track donations, expenses, budgets, and generate reports. All features are ready for backend integration.</p>
+</div>
+
+<!-- Feature 1: Transaction Cards -->
+<div class="transactions">
+  <h2>Recent Transactions</h2>
+  {% for t in transactions %}
+    <div class="transaction-card">
+      <h3>{{ '$' if t['type']=='donation' else '-' }}{{ t['amount'] }}</h3>
+      <p>{{ t['description'] }} from {{ t['donor_name'] }}</p>
+      <p>{{ t['date'] }}</p>
+    </div>
+  {% endfor %}
+</div>
+
+
+<!-- Feature 2: Charts -->
+<div class="charts">
+  <h2>Monthly Donations Overview</h2>
+  <div class="chart-container">
+    <canvas id="donationChart"></canvas>
+  </div>
+  <h2>Expense Breakdown</h2>
+  <div class="chart-container">
+    <canvas id="expenseChart"></canvas>
+  </div>
+</div>
+
+<!-- Feature 3: Budget Placeholder -->
+<div class="intro">
+  <h2>Budget Overview</h2>
+  <p>Dynamic budget cards and calculations will appear here after backend integration.</p>
+</div>
+
+<!-- Feature 4: Download Reports -->
+<div class="reports">
+  <h2>Download Reports</h2>
+  <button onclick="alert('Download CSV Placeholder')">Download CSV</button>
+  <button onclick="alert('Download PDF Placeholder')">Download PDF</button>
+  <button onclick="alert('Generate Summary Placeholder')">Generate Summary</button>
+</div>
+
+<!-- Feature 5: Modal / Interactive Placeholder -->
+<script>
+// Build donation data arrays
+<script>
+// Donations data
+const donationLabels = {{ donation_labels|tojson|safe }};
+const donationValues = {{ donation_values|tojson|safe }};
+
+// Expenses data
+const expenseLabels = {{ expense_labels|tojson|safe }};
+const expenseValues = {{ expense_values|tojson|safe }};
+
+// Donations chart
+const ctx1 = document.getElementById('donationChart').getContext('2d');
+new Chart(ctx1, {
+    type:'bar',
+    data:{
+        labels: donationLabels,
+        datasets:[{label:'Donations ($)', data: donationValues, backgroundColor:'#ff8a00'}]
+    }
+});
+
+// Expenses chart
+const ctx2 = document.getElementById('expenseChart').getContext('2d');
+new Chart(ctx2, {
+    type:'pie',
+    data:{
+        labels: expenseLabels,
+        datasets:[{label:'Expenses', data: expenseValues, backgroundColor:['#e52e71','#ff8a00','#fcb69f','#ffecd2'] }]
+    }
+});
+</script>
+
+
+
+</body>
+</html>

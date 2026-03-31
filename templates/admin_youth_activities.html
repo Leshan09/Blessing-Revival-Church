@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Youth Activities - BRC</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+body {margin:0;font-family:'Poppins',sans-serif;background:linear-gradient(135deg,#1de9b6,#00bcd4,#9c27b0,#e52e71);background-size:400% 400%;animation:gradientShift 12s infinite alternate;color:white;}
+@keyframes gradientShift {0%{background-position:0% 50%;}100%{background-position:100% 50%;}}
+.container {max-width:900px;margin:50px auto;text-align:center;}
+h1 {text-shadow:1px 1px 5px rgba(0,0,0,0.5);}
+.table {width:100%;border-collapse:collapse;margin-top:30px;}
+.table th,.table td {padding:12px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);}
+.card {background:rgba(255,255,255,0.15);backdrop-filter:blur(15px);padding:20px;border-radius:15px;margin:20px;box-shadow:0 10px 30px rgba(0,0,0,0.4);}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Youth Activities</h1>
+<div class="card">
+  <h2>Youth Events</h2>
+  <table class="table">
+    <tr><th>Date</th><th>Title</th><th>Description</th></tr>
+    {% for e in events %}
+    <tr>
+      <td>{{ e['event_date'] }}</td>
+      <td>{{ e['title'] }}</td>
+      <td>{{ e['description'] }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+
+<div class="card">
+  <h2>Youth Messages</h2>
+  <table class="table">
+    <tr><th>Date</th><th>Sender</th><th>Message</th></tr>
+    {% for m in messages %}
+    <tr>
+      <td>{{ m['date_sent'] }}</td>
+      <td>{{ m['name'] }}</td>
+      <td>{{ m['message'] }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+
+  <table class="table">
+    <tr><th>Date</th><th>Activity</th><th>Participants</th></tr>
+    <tr><td>2026-03-25</td><td>Youth Rally</td><td>120</td></tr>
+    <tr><td>2026-03-20</td><td>Community Service</td><td>45</td></tr>
+  </table>
+  <a href="/admin/youth" style="color:white;display:block;margin-top:20px;">⬅ Back to Dashboard</a>
+</div>
+</body>
+</html>

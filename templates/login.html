@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BRC Member Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<style>
+body, html {
+    margin:0; padding:0;
+    font-family:'Poppins',sans-serif;
+    height:100%;
+    background: linear-gradient(120deg,#1de9b6,#00bcd4,#e52e71,#ff8a00);
+    background-size: 400% 400%;
+    animation:bgShift 15s infinite alternate;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+
+@keyframes bgShift {
+    0% {background-position:0% 50%;}
+    50% {background-position:100% 50%;}
+    100% {background-position:0% 50%;}
+}
+
+
+.container {
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(15px);
+    border-radius:20px;
+    padding:40px;
+    width:350px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.5);
+    color:white;
+    text-align:center;
+}
+
+
+.container h1 {
+    margin-bottom:20px;
+    text-shadow:1px 1px 5px rgba(0,0,0,0.5);
+}
+
+
+.input-field {
+    width:100%;
+    padding:12px;
+    margin:10px 0;
+    border:none;
+    border-radius:10px;
+    outline:none;
+}
+
+
+.input-field::placeholder {
+    color: rgba(255,255,255,0.7);
+}
+
+
+button {
+    width:100%;
+    padding:12px;
+    margin-top:15px;
+    border:none;
+    border-radius:10px;
+    background:#00bcd4;
+    color:white;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+
+button:hover {
+    background:#1de9b6;
+}
+
+
+.toggle-password {
+    position:absolute;
+    right:20px;
+    top:calc(50% + 70px);
+    cursor:pointer;
+    color:white;
+}
+
+
+.forgot, .signup-link {
+    margin-top:10px;
+    font-size:14px;
+    color:white;
+    opacity:0.8;
+    cursor:pointer;
+    text-decoration:underline;
+}
+
+
+.alert {
+    display:none;
+    background:rgba(255,0,0,0.5);
+    padding:10px;
+    border-radius:8px;
+    margin-bottom:10px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>Member Login</h1>
+    <div class="alert" id="alertBox">Invalid credentials!</div>
+    <label for="email">Email</label>
+    <input type="email" id="email" class="input-field" placeholder="Email">
+    <label for="password">Password</label>
+    <div style="position:relative;">
+        <input type="password" id="password" class="input-field" placeholder="Password">
+        <i class="fas fa-eye toggle-password" id="togglePassword"></i>
+    </div>
+    <button id="loginBtn">Login</button>
+    <div id="alertbox" style="display:none;margin-top:12px;"></div>
+    <!--navigation (Flask routes)-->
+    <div style="margin-top: 12px;">
+        <a href="/member/forgot-password" id="forgotpass">Forgot Password?</a>
+        <span> | </span>
+        <a href="/member/signup" id="signupLink">Sign up</a>
+    </div>
+
+</div>
+
+<script>
+/* =========================
+   Helpers
+========================= */
+function qs(id) {
+  return document.getElementById(id);
+}
+
+function showAlert(message, type = "error") {
+  const alertBox = qs("alertBox");
+  if (!alertBox) return;
+
+  alertBox.textContent = message;
+  alertBox.style.display = "block";
+
+  // Optional styling hooks
+  alertBox.classList.remove("success", "error", "info");
+  alertBox.classList.add(type);
+}
+
+function hideAlert() {
+  const alertBox = qs("alertBox");
+  if (!alertBox) return;
+  alertBox.style.display = "none";
+}
+
+function setButtonLoading(btn, isLoading, loadingText = "Loading...") {
+  if (!btn) return;
+  if (isLoading) {
+    btn.disabled = true;
+    if (!btn.dataset.oldText) btn.dataset.oldText = btn.textContent || "";
+    btn.textContent = loadingText;
+  } else {
+    btn.disabled = false;
+    btn.textContent = btn.dataset.oldText || btn.textContent;
+  }
+}
+
+async function safeJson(res) {
+  try {
+    return await res.json();
+  } catch {
+    return {};
+  }
+}
+
+/* =========================
+   Main
+========================= */
+document.addEventListener("DOMContentLoaded", () => {
+  const emailEl = qs("email");
+  const passwordEl = qs("password");
+  const loginBtn = qs("loginBtn");
+
+  // Optional elements (script should NOT die if these are missing)
+  const forgotPassEl = qs("forgotPass");
+  const signupLinkEl = qs("signupLink");
+  const togglePasswordEl = qs("togglePassword");
+
+  // Hard requirements for login to function
+  if (!emailEl || !passwordEl || !loginBtn) {
+    console.error(
+      "Missing required element(s). Required IDs: email, password, loginBtn. Optional: forgotPass, signupLink, togglePassword, alertBox."
+    );
+    return;
+  }
+
+  hideAlert();
+
+  /* ===== Show/Hide password (optional) ===== */
+  if (togglePasswordEl) {
+    togglePasswordEl.addEventListener("click", (e) => {
+      e.preventDefault();
+      passwordEl.type = passwordEl.type === "password" ? "text" : "password";
+    });
+  }
+
+  /* ===== Go to Signup page (optional) ===== */
+  if (signupLinkEl) {
+    signupLinkEl.addEventListener("click", (e) => {
+      e.preventDefault();
+      window.location.href = "/member/signup";
+    });
+  }
+
+  /* ===== Login (REAL backend) ===== */
+  loginBtn.addEventListener("click", async (e) => {
+    e.preventDefault();
+    hideAlert();
+
+    const email = (emailEl.value || "").trim();
+    const password = passwordEl.value || "";
+
+    if (!email || !password) {
+      showAlert("Please enter both email and password.", "error");
+      return;
+    }
+
+    setButtonLoading(loginBtn, true, "Logging in...");
+
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await safeJson(res);
+
+      if (!res.ok || data.status !== "success") {
+        showAlert(data.message || `Login failed (${res.status}).`, "error");
+        return;
+      }
+
+      showAlert(data.message || "Login successful.", "success");
+
+      // Convenience only; not secure auth
+      if (data.user_id) {
+        localStorage.setItem("user_id", String(data.user_id));
+        localStorage.setItem("email", email);
+      }
+
+      setTimeout(() => {
+      window.location.href = "/member/dashboard";
+    }, 600);
+
+    } catch (err) {
+      console.error("Login error:", err);
+      showAlert("Network/server error. Make sure the Flask server is running.", "error");
+    } finally {
+      setButtonLoading(loginBtn, false);
+    }
+  });
+
+  /* ===== Forgot Password (REAL backend, optional UI element) ===== */
+  if (forgotPassEl) {
+    forgotPassEl.addEventListener("click", async (e) => {
+      e.preventDefault();
+      hideAlert();
+
+      const email = (emailEl.value || "").trim();
+      if (!email) {
+        showAlert("Enter your email first, then click 'Forgot password?'", "info");
+        return;
+      }
+
+      try {
+        // Prevent double clicks while running
+        forgotPassEl.style.pointerEvents = "none";
+
+        // 1) Request reset code
+        const req = await fetch("/request-reset", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email })
+        });
+
+        const reqData = await safeJson(req);
+
+        if (!req.ok || reqData.status !== "success") {
+          showAlert(reqData.message || `Failed to generate reset code (${req.status}).`, "error");
+          return;
+        }
+
+        showAlert(
+          "Reset code generated. Check your email (or backend test code).",
+          "success"
+        );
+
+        // 2) Ask for code + new password
+        const code = prompt("Enter the reset code:");
+        if (!code) {
+          showAlert("Reset cancelled.", "info");
+          return;
+        }
+
+        const newPassword = prompt("Enter your NEW password:");
+        if (!newPassword) {
+          showAlert("Reset cancelled (no new password entered).", "info");
+          return;
+        }
+
+        const confirmPassword = prompt("Confirm your NEW password:");
+        if (newPassword !== confirmPassword) {
+          showAlert("Passwords do not match.", "error");
+          return;
+        }
+
+        // 3) Submit password reset
+        const reset = await fetch("/reset-password", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email,
+            code: code.trim(),
+            new_password: newPassword
+          })
+        });
+
+        const resetData = await safeJson(reset);
+
+        if (!reset.ok || resetData.status !== "success") {
+          showAlert(resetData.message || `Password reset failed (${reset.status}).`, "error");
+          return;
+        }
+
+        showAlert("Password updated successfully. You can now log in.", "success");
+
+        // Put focus back into password field for immediate login
+        passwordEl.value = "";
+        passwordEl.focus();
+
+      } catch (err) {
+        console.error("Reset error:", err);
+        showAlert(
+          "Network/server error during password reset. Ensure Flask is running.",
+          "error"
+        );
+      } finally {
+        forgotPassEl.style.pointerEvents = "auto";
+      }
+    });
+  }
+});
+
+
+</script>
+
+
+
+
+</body>
+</html>
+
