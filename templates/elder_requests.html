@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Pending Requests | Admin</title>
+
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  body {
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    color: white;
+    padding: 30px;
+  }
+
+  /* Header */
+  .header {
+    margin-bottom: 25px;
+  }
+
+  .header h1 {
+    font-size: 28px;
+  }
+
+  .header p {
+    font-size: 14px;
+    color: #94a3b8;
+  }
+
+  /* Table Container */
+  .table-container {
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead {
+    background: #334155;
+  }
+
+  th, td {
+    padding: 12px 10px;
+    text-align: left;
+  }
+
+  th {
+    font-size: 13px;
+    color: #cbd5f5;
+  }
+
+  td {
+    font-size: 14px;
+    border-top: 1px solid #334155;
+  }
+
+  tr:hover {
+    background: rgba(255,255,255,0.03);
+  }
+
+  /* Buttons */
+  .actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .btn {
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  .approve {
+    background: #22c55e;
+    color: black;
+  }
+
+  .approve:hover {
+    background: #16a34a;
+  }
+
+  .reject {
+    background: #ef4444;
+    color: white;
+  }
+
+  .reject:hover {
+    background: #dc2626;
+  }
+
+  /* Empty State */
+  .empty {
+    text-align: center;
+    padding: 30px;
+    color: #94a3b8;
+  }
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <h1>Pending Join Requests</h1>
+  <p>Review and manage new community members</p>
+</div>
+
+<div class="table-container">
+
+  {% if requests %}
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Message</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for r in requests %}
+      <tr>
+        <td>{{ r.fullname }}</td>
+        <td>{{ r.email }}</td>
+        <td>{{ r.message }}</td>
+        <td>
+          <div class="actions">
+            
+            <form method="post" action="/admin/elder/approve-request/{{ r.id }}">
+              <button type="submit" class="btn approve">Approve</button>
+            </form>
+
+            <form method="post" action="/admin/elder/reject-request/{{ r.id }}">
+              <button type="submit" class="btn reject">Reject</button>
+            </form>
+
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% else %}
+    <div class="empty">
+      No pending requests 🎉
+    </div>
+  {% endif %}
+
+</div>
+
+</body>
+</html>

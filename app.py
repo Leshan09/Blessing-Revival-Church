@@ -5,6 +5,11 @@ import hashlib
 import json
 import os
 import random
+import csv
+import io
+from io import StringIO
+from flask import render_template, request, redirect, send_file, make_response
+from reportlab.pdfgen import canvas
 import string
 # --------------------------
 # Configuration
@@ -94,14 +99,35 @@ def init_db():
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS donations (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    donor_name TEXT NOT NULL,
+    amount REAL NOT NULL,
+    type TEXT CHECK(type IN ('donation','expense')) NOT NULL,
+    description TEXT,
+    date TEXT DEFAULT CURRENT_TIMESTAMP
+    )""")
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS members (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        donor_name TEXT NOT NULL,
-        amount REAL NOT NULL,
-        type TEXT CHECK(type IN ('donation','expense')) NOT NULL,
-        description TEXT,
-        date TEXT DEFAULT CURRENT_TIMESTAMP
+        fullname TEXT NOT NULL,
+        email TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL,
+        reset_code TEXT,
+        status TEXT DEFAULT 'pending'
     )
     """)
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS join_requests (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        fullname TEXT NOT NULL,
+        email TEXT UNIQUE NOT NULL,
+        message TEXT,
+        status TEXT DEFAULT 'pending',
+        date_requested TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+    """)
+
 
 
     # CHECK ADMIN
@@ -134,19 +160,68 @@ def page_about():
 def page_services():
     return render_template("services.html")
 
+# @app.route("/finance")
+# def page_finance():
+#     conn = get_db()
+#     cursor = conn.cursor()
+
+#     # Recent transactions
+#     cursor.execute("SELECT donor_name, amount, type, description, date FROM donations ORDER BY date DESC LIMIT 5")
+#     transactions = [dict(row) for row in cursor.fetchall()]
+
+#     # Monthly donations summary
+#     cursor.execute("""
+#         SELECT strftime('%m', date) as month, SUM(amount) as total
+#         FROM donations WHERE type='donation'
+#         GROUP BY month
+#     """)
+#     monthly_donations = cursor.fetchall()
+#     donation_labels = [row["month"] for row in monthly_donations]
+#     donation_values = [row["total"] for row in monthly_donations]
+
+#     # Expense breakdown
+#     cursor.execute("""
+#         SELECT description, SUM(amount) as total
+#         FROM donations WHERE type='expense'
+#         GROUP BY description
+#     """)
+#     expenses = cursor.fetchall()
+#     expense_labels = [row["description"] for row in expenses]
+#     expense_values = [row["total"] for row in expenses]
+
+#     conn.close()
+
+#     return render_template("finance.html",
+#                            transactions=transactions,
+#                            donation_labels=donation_labels,
+#                            donation_values=donation_values,
+#                            expense_labels=expense_labels,
+#                            expense_values=expense_values)
+
+
 @app.route("/finance")
 def page_finance():
     conn = get_db()
     cursor = conn.cursor()
 
     # Recent transactions
-    cursor.execute("SELECT donor_name, amount, type, description, date FROM donations ORDER BY date DESC LIMIT 5")
+    cursor.execute("""
+        SELECT donor_name, amount, type, description, date 
+        FROM donations 
+        ORDER BY date DESC 
+        LIMIT 5
+    """)
     transactions = [dict(row) for row in cursor.fetchall()]
+
+    # ✅ TOTAL DONATIONS (same as elder page)
+    cursor.execute("SELECT SUM(amount) as total FROM donations WHERE type='donation'")
+    total_donations = cursor.fetchone()["total"] or 0
 
     # Monthly donations summary
     cursor.execute("""
         SELECT strftime('%m', date) as month, SUM(amount) as total
-        FROM donations WHERE type='donation'
+        FROM donations 
+        WHERE type='donation'
         GROUP BY month
     """)
     monthly_donations = cursor.fetchall()
@@ -156,7 +231,8 @@ def page_finance():
     # Expense breakdown
     cursor.execute("""
         SELECT description, SUM(amount) as total
-        FROM donations WHERE type='expense'
+        FROM donations 
+        WHERE type='expense'
         GROUP BY description
     """)
     expenses = cursor.fetchall()
@@ -170,8 +246,8 @@ def page_finance():
                            donation_labels=donation_labels,
                            donation_values=donation_values,
                            expense_labels=expense_labels,
-                           expense_values=expense_values)
-
+                           expense_values=expense_values,
+                           total_donations=total_donations)
 
 
 @app.route("/communication")
@@ -190,14 +266,48 @@ def page_visitor():
 def page_member_login():
     return render_template("login.html")
 
-@app.route("/visitor")
-def visitor():
-    events = load_events()
-    return render_template("visitor.html", events=events)
-
-@app.route("/member/signup", methods=["GET"])
+@app.route("/member/signup", methods=["GET", "POST"])
 def page_member_signup():
-    return render_template("signup.html")
+    email = request.args.get("email")
+
+    if request.method == "POST":
+        fullname = request.form.get("fullname")
+        email = request.form.get("email")
+        password = request.form.get("password")
+
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT status FROM join_requests WHERE email=?", (email,))
+        record = cursor.fetchone()
+
+        if not record or record["status"] != "approved":
+            conn.close()
+            return "You must be approved by an elder before signing up.", 403
+
+        cursor.execute(
+            "INSERT INTO members (fullname, email, password, status) VALUES (?, ?, ?, ?)",
+            (fullname, email, hash_password(password), "approved")
+        )
+        conn.commit()
+        conn.close()
+        return redirect("/member/login")
+
+    return render_template("signup.html", email=email)
+
+
+@app.route("/join")
+def page_join():
+    email = request.args.get("email")  # passed from approval link
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT status FROM join_requests WHERE email=?", (email,))
+    record = cursor.fetchone()
+    conn.close()
+
+    if not record or record["status"] != "approved":
+        return "You must be approved by an elder before signing up.", 403
+
+    return render_template("join.html", email=email)
 
 # --------------------------
 # ✅ JSON Signup API
@@ -216,9 +326,10 @@ def api_signup():
     cursor = conn.cursor()
     try:
         cursor.execute(
-            "INSERT INTO members (fullname, email, password) VALUES (?, ?, ?)",
-            (fullname, email, hash_password(password))
+        "INSERT INTO members (fullname, email, password, status) VALUES (?, ?, ?, ?)",
+        (fullname, email, hash_password(password), "pending")
         )
+
         conn.commit()
         return jsonify({"status": "success", "message": "Account created successfully!"})
     except sqlite3.IntegrityError:
@@ -825,6 +936,217 @@ def save_events(events):
 # --------------------------
 # STARTUP
 # --------------------------
+@app.route("/admin/elder/approve/<int:member_id>", methods=["POST"])
+def elder_approve_member(member_id):
+    if not session.get("admin_logged_in") or session.get("admin_role") != "elder":
+        return redirect("/admin/login")
+
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE members SET status='approved' WHERE id=?", (member_id,))
+    conn.commit()
+    conn.close()
+
+    return redirect("/admin/elder/pending")
+
+@app.route("/api/join-request", methods=["POST"])
+def api_join_request():
+    fullname = request.form.get("fullname")
+    email = request.form.get("email")
+    message = request.form.get("message")
+
+    if not fullname or not email:
+        return "All fields required", 400
+
+    conn = get_db()
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            "INSERT INTO join_requests (fullname, email, message) VALUES (?, ?, ?)",
+            (fullname, email, message)
+        )
+        conn.commit()
+    except sqlite3.IntegrityError:
+        return "Email already requested", 409
+    finally:
+        conn.close()
+
+    return "Request submitted! Await elder approval."
+
+@app.route("/admin/elder/approve-request/<int:req_id>", methods=["POST"])
+def approve_request(req_id):
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE join_requests SET status='approved' WHERE id=?", (req_id,))
+    conn.commit()
+    conn.close()
+    return redirect("/admin/elder/requests")
+
+@app.route("/admin/elder/reject-request/<int:req_id>", methods=["POST"])
+def reject_request(req_id):
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE join_requests SET status='rejected' WHERE id=?", (req_id,))
+    conn.commit()
+    conn.close()
+    return redirect("/admin/elder/requests")
+
+
+@app.route("/admin/elder/requests")
+def elder_requests():
+    if not session.get("admin_logged_in") or session.get("admin_role") != "elder":
+        return redirect("/admin/login")
+
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM join_requests WHERE status='pending'")
+    requests = cursor.fetchall()
+    conn.close()
+
+    return render_template("elder_requests.html", requests=requests)
+
+
+@app.route("/admin/elder/contributions", methods=["GET", "POST"])
+def elder_contributions():
+    if not session.get("admin_logged_in") or session.get("admin_role") != "elder":
+        return redirect("/admin/login")
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    if request.method == "POST":
+        donor_name = request.form.get("donor_name")
+        amount = float(request.form.get("amount"))
+        description = request.form.get("description")
+
+        cursor.execute(
+            "INSERT INTO donations (donor_name, amount, type, description) VALUES (?, ?, 'donation', ?)",
+            (donor_name, amount, description)
+        )
+        conn.commit()
+
+    cursor.execute("SELECT donor_name, amount, description, date FROM donations WHERE type='donation' ORDER BY date DESC")
+    contributions = cursor.fetchall()
+
+    cursor.execute("SELECT SUM(amount) as total FROM donations WHERE type='donation'")
+    total = cursor.fetchone()["total"]
+
+    conn.close()
+
+    return render_template("elder_contributions.html", contributions=contributions, total=total)
+
+
+# @app.route("/admin/elder/contribution", methods=["GET", "POST"])
+# def elder_contribution():
+#     if not session.get("admin_logged_in") or session.get("admin_role") != "elder":
+#         return redirect("/admin/login")
+
+#     if request.method == "POST":
+#         donor_name = request.form.get("donor_name")
+#         amount = float(request.form.get("amount"))
+#         description = request.form.get("description")
+
+#         conn = get_db()
+#         cursor = conn.cursor()
+#         cursor.execute(
+#             "INSERT INTO donations (donor_name, amount, type, description) VALUES (?, ?, 'donation', ?)",
+#             (donor_name, amount, description)
+#         )
+#         conn.commit()
+#         conn.close()
+
+#         return redirect("/finance")  # redirect to totals page
+
+#     return render_template("elder_contribution.html")
+
+
+@app.route("/admin/elder/reject/<int:member_id>", methods=["POST"])
+def elder_reject_member(member_id):
+    if not session.get("admin_logged_in") or session.get("admin_role") != "elder":
+        return redirect("/admin/login")
+
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE members SET status='rejected' WHERE id=?", (member_id,))
+    conn.commit()
+    conn.close()
+
+    return redirect("/admin/elder/pending")
+
+@app.route("/finance/download/csv")
+def download_csv():
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT donor_name, amount, type, description, date
+        FROM donations
+        ORDER BY date DESC
+    """)
+    rows = cursor.fetchall()
+    conn.close()
+
+    output = StringIO()
+    writer = csv.writer(output)
+
+    writer.writerow(["Donor Name", "Amount", "Type", "Description", "Date"])
+
+    for row in rows:
+        writer.writerow([
+            row["donor_name"],
+            row["amount"],
+            row["type"],
+            row["description"],
+            row["date"]
+        ])
+
+    response = make_response(output.getvalue())
+    response.headers["Content-Disposition"] = "attachment; filename=finance_report.csv"
+    response.headers["Content-type"] = "text/csv"
+    return response
+
+@app.route("/finance/download/pdf")
+def download_pdf():
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT donor_name, amount, type, description, date
+        FROM donations
+        ORDER BY date DESC
+    """)
+    rows = cursor.fetchall()
+    conn.close()
+
+    buffer = io.BytesIO()
+    p = canvas.Canvas(buffer)
+
+    y = 800
+    p.setFont("Helvetica-Bold", 14)
+    p.drawString(180, y, "Church Finance Report")
+
+    y -= 40
+    p.setFont("Helvetica", 10)
+
+    for row in rows:
+        text = f"{row['date']} | {row['type']} | KES {row['amount']} | {row['description']}"
+        p.drawString(30, y, text)
+        y -= 20
+
+        if y < 50:
+            p.showPage()
+            y = 800
+
+    p.save()
+    buffer.seek(0)
+
+    return send_file(
+        buffer,
+        as_attachment=True,
+        download_name="finance_report.pdf",
+        mimetype="application/pdf"
+    )
+
 if __name__ == "__main__":
     init_db()
     app.run(debug=True)

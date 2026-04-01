@@ -51,15 +51,11 @@
 <!-- Feature 1: Transaction Cards -->
 <div class="transactions">
   <h2>Recent Transactions</h2>
-  {% for t in transactions %}
     <div class="transaction-card">
-      <h3>{{ '$' if t['type']=='donation' else '-' }}{{ t['amount'] }}</h3>
-      <p>{{ t['description'] }} from {{ t['donor_name'] }}</p>
-      <p>{{ t['date'] }}</p>
+      <h3>Total Contributions</h3>
+         <p><strong>KES {{ total_donations }}</strong></p>
     </div>
-  {% endfor %}
 </div>
-
 
 <!-- Feature 2: Charts -->
 <div class="charts">
@@ -67,6 +63,7 @@
   <div class="chart-container">
     <canvas id="donationChart"></canvas>
   </div>
+
   <h2>Expense Breakdown</h2>
   <div class="chart-container">
     <canvas id="expenseChart"></canvas>
@@ -80,47 +77,69 @@
 </div>
 
 <!-- Feature 4: Download Reports -->
-<div class="reports">
+<!-- <div class="reports">
   <h2>Download Reports</h2>
   <button onclick="alert('Download CSV Placeholder')">Download CSV</button>
   <button onclick="alert('Download PDF Placeholder')">Download PDF</button>
   <button onclick="alert('Generate Summary Placeholder')">Generate Summary</button>
+</div> -->
+<div class="reports">
+  <h2>Download Reports</h2>
+
+  <a href="{{ url_for('download_csv') }}">
+    <button>Download CSV</button>
+  </a>
+
+  <a href="{{ url_for('download_pdf') }}">
+    <button>Download PDF</button>
+  </a>
+
 </div>
 
-<!-- Feature 5: Modal / Interactive Placeholder -->
+<!-- Charts Script -->
 <script>
-// Build donation data arrays
-<script>
-// Donations data
-const donationLabels = {{ donation_labels|tojson|safe }};
-const donationValues = {{ donation_values|tojson|safe }};
+  // Data from Flask
+  const donationLabels = {{ donation_labels | tojson }};
+  const donationValues = {{ donation_values | tojson }};
 
-// Expenses data
-const expenseLabels = {{ expense_labels|tojson|safe }};
-const expenseValues = {{ expense_values|tojson|safe }};
+  const expenseLabels = {{ expense_labels | tojson }};
+  const expenseValues = {{ expense_values | tojson }};
 
-// Donations chart
-const ctx1 = document.getElementById('donationChart').getContext('2d');
-new Chart(ctx1, {
-    type:'bar',
-    data:{
-        labels: donationLabels,
-        datasets:[{label:'Donations ($)', data: donationValues, backgroundColor:'#ff8a00'}]
+  // Donation Chart (Monthly Total Contributions)
+  const ctx1 = document.getElementById('donationChart').getContext('2d');
+  new Chart(ctx1, {
+    type: 'bar',
+    data: {
+      labels: donationLabels,
+      datasets: [{
+        label: 'Monthly Contributions (KES)',
+        data: donationValues,
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: true }
+      }
     }
-});
+  });
 
-// Expenses chart
-const ctx2 = document.getElementById('expenseChart').getContext('2d');
-new Chart(ctx2, {
-    type:'pie',
-    data:{
-        labels: expenseLabels,
-        datasets:[{label:'Expenses', data: expenseValues, backgroundColor:['#e52e71','#ff8a00','#fcb69f','#ffecd2'] }]
+  // Expense Chart
+  const ctx2 = document.getElementById('expenseChart').getContext('2d');
+  new Chart(ctx2, {
+    type: 'pie',
+    data: {
+      labels: expenseLabels,
+      datasets: [{
+        data: expenseValues
+      }]
+    },
+    options: {
+      responsive: true
     }
-});
+  });
 </script>
-
-
 
 </body>
 </html>

@@ -238,6 +238,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const data = await safeJson(res);
 
+
       if (!res.ok || data.status !== "success") {
         showAlert(data.message || `Login failed (${res.status}).`, "error");
         return;

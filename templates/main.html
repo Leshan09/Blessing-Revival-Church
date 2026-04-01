@@ -201,7 +201,10 @@ Blessing Revival Center Portal
   <div class="card">
     <h2>Visitors</h2>
     <p>Explore church programs, events, and upcoming services without logging in.</p>
-    <button title="See our programs and events" onclick="alert('Visitor view placeholder')"><i class="fas fa-eye"></i> Enter as Visitor</button>
+    <button title="See our programs and events" onclick="window.location.href='{{ url_for('page_visitor') }}'">
+  <i class="fas fa-eye"></i> Enter as Visitor
+</button>
+
   </div>
 
   <div class="card">
