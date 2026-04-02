@@ -10,6 +10,9 @@ import io
 from io import StringIO
 from flask import render_template, request, redirect, send_file, make_response
 import string
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # reportlab may require optional cairo support in some environments.
 # If reportlab cannot be installed, we still allow the app startup and disable PDF download.
@@ -25,6 +28,8 @@ EVENT_FILE = "events.json"
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_NAME = os.path.join(BASE_DIR, "brc_website.db")
+DATABASE_URL = os.getenv("DATABASE_URL")
+USE_POSTGRES = bool(DATABASE_URL)
 
 app = Flask(__name__)
 CORS(app)
@@ -37,8 +42,41 @@ app.secret_key = os.getenv("SECRET_KEY", "dev_fallback_key_not_secure")
 # --------------------------
 # Helper Functions
 # --------------------------
+class AdaptiveCursor:
+    def __init__(self, cursor, paramstyle):
+        self._cursor = cursor
+        self.paramstyle = paramstyle
+
+    def execute(self, query, params=None):
+        if self.paramstyle == "pyformat":
+            query = query.replace("?", "%s")
+        if params is None:
+            return self._cursor.execute(query)
+        return self._cursor.execute(query, params)
+
+    def executemany(self, query, seq_of_params):
+        if self.paramstyle == "pyformat":
+            query = query.replace("?", "%s")
+        return self._cursor.executemany(query, seq_of_params)
+
+    def __getattr__(self, name):
+        return getattr(self._cursor, name)
+
+
 def get_db():
-    conn = sqlite3.connect("brc_website.db")
+    if USE_POSTGRES:
+        import psycopg2
+        import psycopg2.extras
+
+        conn = psycopg2.connect(DATABASE_URL, cursor_factory=psycopg2.extras.RealDictCursor)
+
+        def cursor_wrapper(*args, **kwargs):
+            return AdaptiveCursor(conn.cursor(*args, **kwargs), "pyformat")
+
+        conn.cursor = cursor_wrapper
+        return conn
+
+    conn = sqlite3.connect(DB_NAME, check_same_thread=False)
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -54,7 +92,16 @@ def init_db():
     conn = get_db()
     cursor = conn.cursor()
 
-    cursor.execute("""
+    def execute(sql, params=None):
+        if USE_POSTGRES:
+            sql = sql.replace("INTEGER PRIMARY KEY AUTOINCREMENT", "SERIAL PRIMARY KEY")
+            sql = sql.replace("TEXT DEFAULT CURRENT_TIMESTAMP", "TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP")
+            sql = sql.replace("CURRENT_TIMESTAMP", "CURRENT_TIMESTAMP")
+        if params is None:
+            return cursor.execute(sql)
+        return cursor.execute(sql, params)
+
+    execute("""
     CREATE TABLE IF NOT EXISTS members (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         fullname TEXT NOT NULL,
@@ -64,7 +111,7 @@ def init_db():
     )
     """)
 
-    cursor.execute("""
+    execute("""
     CREATE TABLE IF NOT EXISTS messages (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
@@ -83,7 +130,7 @@ def init_db():
     )
     """)
 
-    cursor.execute("""
+    execute("""
     CREATE TABLE IF NOT EXISTS admins (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE NOT NULL,
@@ -92,7 +139,7 @@ def init_db():
     )
     """)
 
-    cursor.execute("""
+    execute("""
     CREATE TABLE IF NOT EXISTS events (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT NOT NULL,
@@ -103,7 +150,7 @@ def init_db():
     )
     """)
 
-    cursor.execute("""
+    execute("""
     CREATE TABLE IF NOT EXISTS donations (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     donor_name TEXT NOT NULL,
@@ -113,7 +160,7 @@ def init_db():
     date TEXT DEFAULT CURRENT_TIMESTAMP
     )""")
 
-    cursor.execute("""
+    execute("""
     CREATE TABLE IF NOT EXISTS members (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         fullname TEXT NOT NULL,
@@ -123,7 +170,7 @@ def init_db():
         status TEXT DEFAULT 'pending'
     )
     """)
-    cursor.execute("""
+    execute("""
     CREATE TABLE IF NOT EXISTS join_requests (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         fullname TEXT NOT NULL,
@@ -137,14 +184,14 @@ def init_db():
 
 
     # CHECK ADMIN
-    cursor.execute(
+    execute(
         "SELECT * FROM admins WHERE username = ?",
         ("pastor",)
     )
     admin = cursor.fetchone()
 
     if admin is None:
-        cursor.execute(
+        execute(
             "INSERT INTO admins (username, password, role) VALUES (?, ?, ?)",
             ("pastor", hash_password("pastor123"), "pastor")
         )
@@ -154,6 +201,11 @@ def init_db():
 # --------------------------
 # Page Routes
 # --------------------------
+@app.before_first_request
+def ensure_db_initialized():
+    init_db()
+
+
 @app.route("/")
 def page_home():
     return render_template("main.html")
