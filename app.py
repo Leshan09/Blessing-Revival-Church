@@ -9,8 +9,14 @@ import csv
 import io
 from io import StringIO
 from flask import render_template, request, redirect, send_file, make_response
-from reportlab.pdfgen import canvas
 import string
+
+# reportlab may require optional cairo support in some environments.
+# If reportlab cannot be installed, we still allow the app startup and disable PDF download.
+try:
+    from reportlab.pdfgen import canvas
+except ImportError:
+    canvas = None
 # --------------------------
 # Configuration
 # --------------------------
@@ -1117,6 +1123,9 @@ def download_pdf():
     """)
     rows = cursor.fetchall()
     conn.close()
+
+    if canvas is None:
+        return "PDF generation is unavailable; some dependencies are missing on this platform.", 503
 
     buffer = io.BytesIO()
     p = canvas.Canvas(buffer)
