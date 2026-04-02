@@ -122,9 +122,19 @@ def init_db():
         fullname TEXT NOT NULL,
         email TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL,
-        reset_code TEXT
+        reset_code TEXT,
+        status TEXT DEFAULT 'pending'
     )
     """)
+
+    # postgres may have existing older schema with missing 'status'. ensure consistency.
+    if USE_POSTGRES:
+        try:
+            execute("""
+            ALTER TABLE members ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'pending'
+            """)
+        except Exception:
+            pass
 
     execute("""
     CREATE TABLE IF NOT EXISTS messages (
