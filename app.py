@@ -413,16 +413,56 @@ def api_signup():
 
     conn = get_db()
     cursor = conn.cursor()
+
+    cursor.execute("SELECT email FROM members WHERE email=?", (email,))
+    if cursor.fetchone():
+        conn.close()
+        return jsonify({"status": "fail", "message": "Email already exists."}), 409
+
     try:
         cursor.execute(
-        "INSERT INTO members (fullname, email, password, status) VALUES (?, ?, ?, ?)",
-        (fullname, email, hash_password(password), "pending")
+            "INSERT INTO members (fullname, email, password, status) VALUES (?, ?, ?, ?)",
+            (fullname, email, hash_password(password), "pending")
         )
-
         conn.commit()
-        return jsonify({"status": "success", "message": "Account created successfully!"})
-    except sqlite3.IntegrityError:
-        return jsonify({"status": "fail", "message": "Email already exists."}), 409
+        return jsonify({"status": "success", "message": "Member account created and pending approval."})
+    except Exception as e:
+        return jsonify({"status": "fail", "message": str(e)}), 500
+    finally:
+        conn.close()
+
+
+@app.route("/api/admin/signup", methods=["POST"])
+def api_admin_signup():
+    data = request.get_json() or {}
+    username = data.get("username")
+    password = data.get("password")
+    role = data.get("role", "superadmin")
+    admin_secret = data.get("admin_secret")
+
+    required_secret = os.getenv("ADMIN_SIGNUP_SECRET")
+    if not required_secret or admin_secret != required_secret:
+        return jsonify({"status": "fail", "message": "Unauthorized."}), 403
+
+    if not username or not password:
+        return jsonify({"status": "fail", "message": "Username and password required."}), 400
+
+    conn = get_db()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT username FROM admins WHERE username=?", (username,))
+        if cursor.fetchone():
+            conn.close()
+            return jsonify({"status": "fail", "message": "Admin user already exists."}), 409
+
+        cursor.execute(
+            "INSERT INTO admins (username, password, role) VALUES (?, ?, ?)",
+            (username, hash_password(password), role)
+        )
+        conn.commit()
+        return jsonify({"status": "success", "message": "Admin account created."})
+    except Exception as e:
+        return jsonify({"status": "fail", "message": str(e)}), 500
     finally:
         conn.close()
 
