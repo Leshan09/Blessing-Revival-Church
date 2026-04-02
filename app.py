@@ -548,6 +548,38 @@ def member():
 # --------------------------
 # ADMIN
 # --------------------------
+@app.route("/admin/signup", methods=["GET", "POST"])
+def admin_signup():
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+        role = request.form.get("role", "pastor")
+        admin_secret = request.form.get("admin_secret")
+
+        required_secret = os.getenv("ADMIN_SIGNUP_SECRET")
+        if not required_secret or admin_secret != required_secret:
+            return "Unauthorized", 403
+
+        if not username or not password:
+            return "Username and password are required", 400
+
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT username FROM admins WHERE username = ?", (username,))
+        if cursor.fetchone():
+            conn.close()
+            return "Admin username already exists", 409
+
+        cursor.execute("INSERT INTO admins (username, password, role) VALUES (?, ?, ?)",
+                       (username, hash_password(password), role))
+        conn.commit()
+        conn.close()
+
+        return redirect("/admin/login")
+
+    return render_template("admin_signup.html")
+
+
 @app.route("/admin/login", methods=["GET", "POST"])
 def admin_login():
     if request.method == "POST":

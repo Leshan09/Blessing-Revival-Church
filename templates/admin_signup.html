@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Login - BRC</title>
+<title>Admin Signup - BRC</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
@@ -25,91 +25,51 @@ body {
     100% {background-position:100% 50%;}
 }
 
-.login-container {
+.signup-container {
     background: rgba(255,255,255,0.15);
     backdrop-filter: blur(20px);
     padding:40px;
     border-radius:20px;
-    width:350px;
+    width:360px;
     text-align:center;
     box-shadow:0 10px 30px rgba(0,0,0,0.4);
     color:white;
 }
 
-.login-container h2 {
+.signup-container h2 {
     margin-bottom:20px;
     font-weight:700;
 }
 
-.input-group {
-    margin-bottom:20px;
-}
-
-.input-group input {
-    width:100%;
-    padding:12px;
-    border:none;
-    border-radius:10px;
-    outline:none;
-    font-size:14px;
-}
-
-.login-btn {
-    width:100%;
-    padding:12px;
-    border:none;
-    border-radius:10px;
-    background:white;
-    color:#00bcd4;
-    font-weight:600;
-    cursor:pointer;
-    transition:0.3s;
-}
-
-.login-btn:hover {
-    background:#00bcd4;
-    color:white;
-}
-
-.extra {
-    margin-top:15px;
-    font-size:13px;
-    opacity:0.8;
-}
-
-.logo {
-    font-size:18px;
-    margin-bottom:10px;
-    opacity:0.9;
-}
+.input-group { margin-bottom:20px; }
+.input-group input { width:100%; padding:12px; border:none; border-radius:10px; outline:none; font-size:14px; }
+.signup-btn { width:100%; padding:12px; border:none; border-radius:10px; background:white; color:#00bcd4; font-weight:600; cursor:pointer; transition:0.3s; }
+.signup-btn:hover { background:#00bcd4; color:white; }
+.extra { margin-top:15px; font-size:13px; opacity:0.8; }
 </style>
 </head>
 
 <body>
-
-<div class="login-container">
-    <div class="logo">BRC Admin Portal</div>
-    <h2>Login</h2>
-
-    <form method="POST" action="/admin/login">
+<div class="signup-container">
+    <h2>Admin Signup</h2>
+    <form method="POST" action="/admin/signup">
         <div class="input-group">
             <input type="text" name="username" placeholder="Username" required>
         </div>
-
         <div class="input-group">
             <input type="password" name="password" placeholder="Password" required>
         </div>
-
-        <button class="login-btn" type="submit">Login</button>
+        <div class="input-group">
+            <input type="text" name="role" placeholder="Role (pastor/elder/youth)" value="pastor" required>
+        </div>
+        <div class="input-group">
+            <input type="password" name="admin_secret" placeholder="Admin signup secret" required>
+        </div>
+        <button class="signup-btn" type="submit">Create Admin Account</button>
     </form>
-
     <div class="extra">
-        Authorized personnel only
-    </div>
-    <div class="extra" style="margin-top:10px;">
-        <a href="/admin/signup" style="color:white; text-decoration:underline;">Need admin account? Sign up</a>
+        Already have account? <a href="/admin/login" style="color:white; text-decoration:underline;">Login here</a>
     </div>
 </div>
-
 </body>
 </html>
