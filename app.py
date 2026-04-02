@@ -201,9 +201,15 @@ def init_db():
 # --------------------------
 # Page Routes
 # --------------------------
-@app.before_first_request
+
 def ensure_db_initialized():
     init_db()
+
+# init DB for all servers (Gunicorn, development, etc.)
+try:
+    ensure_db_initialized()
+except Exception:
+    pass
 
 
 @app.route("/")
