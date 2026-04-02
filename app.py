@@ -70,11 +70,26 @@ def get_db():
 
         conn = psycopg2.connect(DATABASE_URL, cursor_factory=psycopg2.extras.RealDictCursor)
 
-        def cursor_wrapper(*args, **kwargs):
-            return AdaptiveCursor(conn.cursor(*args, **kwargs), "pyformat")
+        class PostgresConnectionWrapper:
+            def __init__(self, conn):
+                self._conn = conn
 
-        conn.cursor = cursor_wrapper
-        return conn
+            def cursor(self, *args, **kwargs):
+                return AdaptiveCursor(self._conn.cursor(*args, **kwargs), "pyformat")
+
+            def commit(self):
+                return self._conn.commit()
+
+            def close(self):
+                return self._conn.close()
+
+            def rollback(self):
+                return self._conn.rollback()
+
+            def __getattr__(self, name):
+                return getattr(self._conn, name)
+
+        return PostgresConnectionWrapper(conn)
 
     conn = sqlite3.connect(DB_NAME, check_same_thread=False)
     conn.row_factory = sqlite3.Row
