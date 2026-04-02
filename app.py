@@ -290,29 +290,68 @@ def page_services():
 
 @app.route("/finance")
 def page_finance():
-    conn = get_db()
-    cursor = conn.cursor()
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
 
-    # Recent transactions
-    cursor.execute("""
-        SELECT donor_name, amount, type, description, date 
-        FROM donations 
-        ORDER BY date DESC 
-        LIMIT 5
-    """)
-    transactions = [dict(row) for row in cursor.fetchall()]
+        # Recent transactions
+        cursor.execute("""
+            SELECT donor_name, amount, type, description, date 
+            FROM donations 
+            ORDER BY date DESC 
+            LIMIT 5
+        """)
+        transactions = [dict(row) for row in cursor.fetchall()]
 
-    # ✅ TOTAL DONATIONS (same as elder page)
-    cursor.execute("SELECT SUM(amount) as total FROM donations WHERE type='donation'")
-    total_donations = cursor.fetchone()["total"] or 0
+        # ✅ TOTAL DONATIONS (same as elder page)
+        cursor.execute("SELECT SUM(amount) as total FROM donations WHERE type='donation'")
+        total_donations = cursor.fetchone()["total"] or 0
 
-    # Monthly donations summary
-    cursor.execute("""
-        SELECT strftime('%m', date) as month, SUM(amount) as total
-        FROM donations 
-        WHERE type='donation'
-        GROUP BY month
-    """)
+        # Monthly donations summary
+        if USE_POSTGRES:
+            date_group_sql = "TO_CHAR(date, 'MM')"
+        else:
+            date_group_sql = "strftime('%m', date)"
+
+        cursor.execute(f"""
+            SELECT {date_group_sql} as month, SUM(amount) as total
+            FROM donations 
+            WHERE type='donation'
+            GROUP BY month
+            ORDER BY month
+        """)
+
+        monthly_donations = cursor.fetchall()
+        donation_labels = [row["month"] for row in monthly_donations]
+        donation_values = [row["total"] for row in monthly_donations]
+
+        # Expense breakdown
+        cursor.execute("""
+            SELECT description, SUM(amount) as total
+            FROM donations 
+            WHERE type='expense'
+            GROUP BY description
+        """)
+        expenses = cursor.fetchall()
+        expense_labels = [row["description"] for row in expenses]
+        expense_values = [row["total"] for row in expenses]
+
+        conn.close()
+
+        return render_template("finance.html",
+                               transactions=transactions,
+                               donation_labels=donation_labels,
+                               donation_values=donation_values,
+                               expense_labels=expense_labels,
+                               expense_values=expense_values,
+                               total_donations=total_donations)
+
+    except Exception as e:
+        if conn:
+            conn.close()
+        # Log error and show a helpful message
+        print("Finance rendering error:", repr(e))
+        return "An error occurred while loading finance data.", 500
     monthly_donations = cursor.fetchall()
     donation_labels = [row["month"] for row in monthly_donations]
     donation_values = [row["total"] for row in monthly_donations]
