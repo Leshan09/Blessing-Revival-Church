@@ -1028,6 +1028,11 @@ def api_login():
     if user["password"] != hash_password(password):
         return jsonify({"status": "fail", "message": "Incorrect password."}), 401
 
+    # mark member as logged in for session checks
+    session["member_logged_in"] = True
+    session["member_id"] = user["id"]
+    session["member_email"] = email
+
     return jsonify({"status": "success", "user_id": user["id"]})
 
 # --------------------------
